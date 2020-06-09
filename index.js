@@ -6,7 +6,7 @@ const fs = require('fs');
 
     const cluster = await Cluster.launch({
         concurrency: Cluster.CONCURRENCY_CONTEXT,
-        maxConcurrency: 3,
+        maxConcurrency: 5,
         monitor: true,
     })
 
@@ -26,9 +26,9 @@ const fs = require('fs');
         reviews.forEach(i => db.push(i))
     })
 
-    const basedURL = 'https://www.amazon.com/Apple-iPhone-Totalmente-desbloqueado-Negro/product-reviews/B01N4R20RS/ref=cm_cr_arp_d_paging_btm_next_3?ie=UTF8&pageNumber='
+    const basedURL = 'https://www.amazon.com/Apple-iPad-10-2-Inch-Wi-Fi-Cellular/product-reviews/B07XL7G5CK/ref=cm_cr_arp_d_paging_btm_next_2?ie=UTF8&reviewerType=all_reviews&pageNumber='
 
-    for (let index = 1; index <= 5; index++) {
+    for (let index = 1; index <= 412; index++) {
         cluster.queue(basedURL + index)
     }
 
@@ -37,11 +37,9 @@ const fs = require('fs');
     // console.log(db)
     console.log(db.length)
 
-    const text = db.map(JSON.stringify)
-        .join('\n')
-        .replace(/(^\[)|(\]$)/mg, '')
+    const text = JSON.stringify(db)
 
-    fs.writeFile('reviews.txt', text, 'utf8', function(err) {
+    fs.writeFile('reviews.json', text, 'utf8', function(err) {
         if (err) {
             console.log('Some error occured - file either not saved or corrupted file saved.');
         } else {
